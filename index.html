@@ -5,6 +5,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ダンス練習日記</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-top: 10px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 10px;
+      margin-right: 8px;
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+
+    .diary {
+      border-top: 1px solid #ccc;
+      padding: 20px 0;
+    }
+
+    .diary-text {
+      white-space: pre-wrap;
+    }
+  </style>
 </head>
 
 <body>
@@ -16,76 +48,144 @@
   <br><br>
 
   <textarea
-    id="diary"
+    id="diaryText"
     placeholder="今日の練習について書く"
-    rows="10"
-    cols="40">
-  </textarea>
+  ></textarea>
 
   <br>
 
-  <button onclick="saveDiary()">
-    保存
-  </button>
+  <button onclick="saveDiary()">保存</button>
 
-  <h2>練習ログ</h2>
+  <h2>過去の日記</h2>
 
   <div id="diaryList"></div>
 
 
   <script>
-
     let diaries =
       JSON.parse(localStorage.getItem("diaries")) || [];
 
+    let editingIndex = null;
+
 
     function saveDiary() {
-
       const date =
         document.getElementById("date").value;
 
       const text =
-        document.getElementById("diary").value;
+        document.getElementById("diaryText").value;
 
-      if (!date || !text) {
-        alert("日付と日記を書いてください");
+      if (!date || !text.trim()) {
+        alert("日付と日記を入力してください");
         return;
       }
 
-      diaries.unshift({
-        date: date,
-        text: text
-      });
+      if (editingIndex === null) {
 
-      localStorage.setItem(
-        "diaries",
-        JSON.stringify(diaries)
-      );
+        diaries.unshift({
+          date: date,
+          text: text
+        });
 
-      document.getElementById("diary").value = "";
+      } else {
+
+        diaries[editingIndex] = {
+          date: date,
+          text: text
+        };
+
+        editingIndex = null;
+      }
+
+      saveToLocalStorage();
+
+      document.getElementById("date").value = "";
+      document.getElementById("diaryText").value = "";
 
       showDiaries();
     }
 
 
+    function editDiary(index) {
+      const diary = diaries[index];
+
+      document.getElementById("date").value = diary.date;
+      document.getElementById("diaryText").value = diary.text;
+
+      editingIndex = index;
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+
+    function deleteDiary(index) {
+
+      const ok =
+        confirm("この日記を削除しますか？");
+
+      if (!ok) {
+        return;
+      }
+
+      diaries.splice(index, 1);
+
+      saveToLocalStorage();
+
+      showDiaries();
+    }
+
+
+    function saveToLocalStorage() {
+      localStorage.setItem(
+        "diaries",
+        JSON.stringify(diaries)
+      );
+    }
+
+
     function showDiaries() {
 
-      const list =
+      const diaryList =
         document.getElementById("diaryList");
 
-      list.innerHTML = "";
+      diaryList.innerHTML = "";
 
-      diaries.forEach(diary => {
+      diaries.forEach((diary, index) => {
 
-        list.innerHTML += `
-          <hr>
-          <h3>${diary.date}</h3>
-          <p>${diary.text}</p>
+        diaryList.innerHTML += `
+          <div class="diary">
+
+            <strong>${diary.date}</strong>
+
+            <p class="diary-text">${escapeHtml(diary.text)}</p>
+
+            <button onclick="editDiary(${index})">
+              編集
+            </button>
+
+            <button onclick="deleteDiary(${index})">
+              削除
+            </button>
+
+          </div>
         `;
 
       });
-
     }
+
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
 
     showDiaries();
 
