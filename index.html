@@ -1,11 +1,95 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ダンス練習日記</title>
 </head>
+
 <body>
+
   <h1>ダンス練習日記</h1>
-  <p>表示できた！</p>
+
+  <input type="date" id="date">
+
+  <br><br>
+
+  <textarea
+    id="diary"
+    placeholder="今日の練習について書く"
+    rows="10"
+    cols="40">
+  </textarea>
+
+  <br>
+
+  <button onclick="saveDiary()">
+    保存
+  </button>
+
+  <h2>練習ログ</h2>
+
+  <div id="diaryList"></div>
+
+
+  <script>
+
+    let diaries =
+      JSON.parse(localStorage.getItem("diaries")) || [];
+
+
+    function saveDiary() {
+
+      const date =
+        document.getElementById("date").value;
+
+      const text =
+        document.getElementById("diary").value;
+
+      if (!date || !text) {
+        alert("日付と日記を書いてください");
+        return;
+      }
+
+      diaries.unshift({
+        date: date,
+        text: text
+      });
+
+      localStorage.setItem(
+        "diaries",
+        JSON.stringify(diaries)
+      );
+
+      document.getElementById("diary").value = "";
+
+      showDiaries();
+    }
+
+
+    function showDiaries() {
+
+      const list =
+        document.getElementById("diaryList");
+
+      list.innerHTML = "";
+
+      diaries.forEach(diary => {
+
+        list.innerHTML += `
+          <hr>
+          <h3>${diary.date}</h3>
+          <p>${diary.text}</p>
+        `;
+
+      });
+
+    }
+
+    showDiaries();
+
+  </script>
+
 </body>
 </html>
