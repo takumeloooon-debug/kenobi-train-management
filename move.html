@@ -7,9 +7,11 @@
 
   <title>ムーブ管理</title>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+
     body {
       font-family: sans-serif;
       max-width: 700px;
@@ -44,6 +46,16 @@
       padding: 20px 0;
     }
 
+    .move p {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .move-label {
+      display: block;
+      margin-bottom: 4px;
+    }
+
     #appArea {
       display: none;
     }
@@ -52,21 +64,33 @@
       display: inline-block;
       margin-bottom: 20px;
     }
+
   </style>
+
 </head>
 
 
 <body>
+
+  <!-- =========================
+       管理画面に戻る
+  ========================== -->
 
   <a href="index.html" class="back-link">
     ← 管理画面に戻る
   </a>
 
 
+  <!-- =========================
+       ムーブ管理画面
+  ========================== -->
+
   <div id="appArea">
 
     <h1>ムーブ管理</h1>
 
+
+    <!-- ネタ -->
 
     <h3>ネタ</h3>
 
@@ -76,6 +100,8 @@
       placeholder="ムーブのネタを入力"
     >
 
+
+    <!-- 詳細 -->
 
     <h3>詳細</h3>
 
@@ -88,10 +114,14 @@
     <br>
 
 
+    <!-- 保存 -->
+
     <button onclick="saveMove()">
       保存
     </button>
 
+
+    <!-- 編集キャンセル -->
 
     <button
       id="cancelEditButton"
@@ -102,6 +132,8 @@
     </button>
 
 
+    <!-- ムーブ一覧 -->
+
     <h2>ムーブ一覧</h2>
 
     <div id="moveList"></div>
@@ -111,9 +143,9 @@
 
   <script>
 
-    // =========================
-    // Supabase
-    // =========================
+    // ========================================
+    // Supabase接続設定
+    // ========================================
 
     const SUPABASE_URL =
       "https://ujjnommuwuziebqlpoow.supabase.co";
@@ -128,6 +160,10 @@
       );
 
 
+    // ========================================
+    // 変数
+    // ========================================
+
     let currentUser = null;
 
     let moves = [];
@@ -136,9 +172,9 @@
 
 
 
-    // =========================
-    // 初期処理
-    // =========================
+    // ========================================
+    // ページを開いたとき
+    // ========================================
 
     async function initialize() {
 
@@ -147,12 +183,16 @@
 
 
       if (error) {
+
         console.error(error);
+
         return;
       }
 
 
-      // 未ログインならトップへ戻す
+      // ログインしていなければ
+      // 管理画面へ戻す
+
       if (!data.session) {
 
         window.location.href =
@@ -162,23 +202,30 @@
       }
 
 
+      // ログインユーザーを保存
+
       currentUser =
         data.session.user;
 
+
+      // 画面を表示
 
       document
         .getElementById("appArea")
         .style.display = "block";
 
 
+      // DBからムーブ取得
+
       await loadMoves();
+
     }
 
 
 
-    // =========================
-    // ムーブ取得
-    // =========================
+    // ========================================
+    // DBからムーブを取得
+    // ========================================
 
     async function loadMoves() {
 
@@ -186,9 +233,12 @@
         await supabaseClient
           .from("moves")
           .select("*")
-          .order("created_at", {
-            ascending: true
-          });
+          .order(
+            "created_at",
+            {
+              ascending: true
+            }
+          );
 
 
       if (error) {
@@ -205,13 +255,14 @@
       moves = data;
 
       showMoves();
+
     }
 
 
 
-    // =========================
-    // 保存・更新
-    // =========================
+    // ========================================
+    // ムーブを保存
+    // ========================================
 
     async function saveMove() {
 
@@ -229,9 +280,13 @@
           .trim();
 
 
+      // ネタが空の場合
+
       if (!idea) {
 
-        alert("ネタを入力してください");
+        alert(
+          "ネタを入力してください"
+        );
 
         return;
       }
@@ -240,41 +295,72 @@
       let error;
 
 
-      // 新規保存
+      // ======================================
+      // 新規登録
+      // ======================================
+
       if (editingId === null) {
 
         const result =
           await supabaseClient
             .from("moves")
             .insert({
-              user_id: currentUser.id,
-              idea: idea,
-              detail: detail
+
+              user_id:
+                currentUser.id,
+
+              idea:
+                idea,
+
+              detail:
+                detail
+
             });
 
-        error = result.error;
+
+        error =
+          result.error;
 
       }
 
 
-      // 編集保存
+      // ======================================
+      // 編集
+      // ======================================
+
       else {
 
         const result =
           await supabaseClient
             .from("moves")
             .update({
-              idea: idea,
-              detail: detail
-            })
-            .eq("id", editingId);
 
-        error = result.error;
+              idea:
+                idea,
+
+              detail:
+                detail
+
+            })
+            .eq(
+              "id",
+              editingId
+            );
+
+
+        error =
+          result.error;
 
       }
 
 
+      // ======================================
+      // エラー
+      // ======================================
+
       if (error) {
+
+        console.error(error);
 
         alert(
           "保存に失敗しました：" +
@@ -285,85 +371,120 @@
       }
 
 
+      // 入力欄をリセット
+
       clearForm();
 
+
+      // 一覧を再取得
+
       await loadMoves();
+
     }
 
 
 
-    // =========================
+    // ========================================
     // 編集
-    // =========================
+    // ========================================
 
     function editMove(id) {
 
       const move =
         moves.find(
-          move => move.id === id
+          move =>
+            move.id === id
         );
 
 
       if (!move) {
+
         return;
+
       }
 
 
+      // 入力欄に戻す
+
       document
         .getElementById("moveIdea")
-        .value = move.idea;
+        .value =
+          move.idea;
 
 
       document
         .getElementById("moveDetail")
-        .value = move.detail || "";
+        .value =
+          move.detail || "";
 
 
-      editingId = move.id;
+      // 編集中のIDを保存
 
+      editingId =
+        move.id;
+
+
+      // キャンセルボタン表示
 
       document
-        .getElementById("cancelEditButton")
-        .style.display = "inline-block";
+        .getElementById(
+          "cancelEditButton"
+        )
+        .style.display =
+          "inline-block";
 
+
+      // 上までスクロール
 
       window.scrollTo({
+
         top: 0,
-        behavior: "smooth"
+
+        behavior:
+          "smooth"
+
       });
+
     }
 
 
 
-    // =========================
+    // ========================================
     // 入力欄リセット
-    // =========================
+    // ========================================
 
     function clearForm() {
 
       document
         .getElementById("moveIdea")
-        .value = "";
+        .value =
+          "";
 
 
       document
         .getElementById("moveDetail")
-        .value = "";
+        .value =
+          "";
 
 
-      editingId = null;
+      editingId =
+        null;
 
 
       document
-        .getElementById("cancelEditButton")
-        .style.display = "none";
+        .getElementById(
+          "cancelEditButton"
+        )
+        .style.display =
+          "none";
+
     }
 
 
 
-    // =========================
+    // ========================================
     // 削除
-    // =========================
+    // ========================================
 
     async function deleteMove(id) {
 
@@ -374,7 +495,9 @@
 
 
       if (!ok) {
+
         return;
+
       }
 
 
@@ -382,7 +505,10 @@
         await supabaseClient
           .from("moves")
           .delete()
-          .eq("id", id);
+          .eq(
+            "id",
+            id
+          );
 
 
       if (error) {
@@ -396,82 +522,146 @@
       }
 
 
+      // 編集中のムーブを削除した場合
+
       if (editingId === id) {
+
         clearForm();
+
       }
 
 
+      // 一覧更新
+
       await loadMoves();
+
     }
 
 
 
-    // =========================
-    // 表示
-    // =========================
+    // ========================================
+    // ムーブ一覧を表示
+    // ========================================
 
-function showMoves() {
+    function showMoves() {
 
-  const moveList =
-    document.getElementById("moveList");
+      const moveList =
+        document
+          .getElementById(
+            "moveList"
+          );
 
-  moveList.innerHTML = "";
 
-  if (moves.length === 0) {
-    moveList.innerHTML =
-      "<p>まだムーブがありません。</p>";
-    return;
-  }
+      moveList.innerHTML =
+        "";
 
-  moves.forEach((move, index) => {
 
-    moveList.innerHTML += `
-      <div class="move">
+      // まだムーブがない場合
 
-        <h3>ムーブ${index + 1}</h3>
+      if (moves.length === 0) {
 
-        <p style="white-space: normal;">
-          <strong style="display:block;">ネタ：</strong>
-          ${escapeHtml(move.idea)}
-        </p>
+        moveList.innerHTML =
+          "<p>まだムーブがありません。</p>";
 
-        <p style="white-space: normal;">
-          <strong style="display:block;">詳細：</strong>
-          ${escapeHtml(move.detail || "").replace(/\n/g, "<br>")}
-        </p>
+        return;
 
-        <button onclick="editMove(${move.id})">
-          編集
-        </button>
+      }
 
-        <button onclick="deleteMove(${move.id})">
-          削除
-        </button>
 
-      </div>
-    `;
-  });
-}
-    
+      // ムーブを順番に表示
+
+      moves.forEach(
+        (move, index) => {
+
+
+          // 詳細の改行を
+          // <br>に変換
+
+          const detailHtml =
+            escapeHtml(
+              move.detail || ""
+            )
+            .replace(
+              /\n/g,
+              "<br>"
+            );
+
+
+          moveList.innerHTML += `
+
+            <div class="move">
+
+              <h3>ムーブ${index + 1}</h3>
+
+              <p>
+                <strong class="move-label">ネタ：</strong>
+                ${escapeHtml(move.idea)}
+              </p>
+
+              <p>
+                <strong class="move-label">詳細：</strong>
+                ${detailHtml}
+              </p>
+
+              <button onclick="editMove(${move.id})">
+                編集
+              </button>
+
+              <button onclick="deleteMove(${move.id})">
+                削除
+              </button>
+
+            </div>
+
+          `;
+
+        }
+      );
+
     }
 
 
 
-    // =========================
-    // HTML対策
-    // =========================
+    // ========================================
+    // HTMLとして解釈されないようにする
+    // ========================================
 
     function escapeHtml(text) {
 
       return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+
+        .replace(
+          /</g,
+          "&lt;"
+        )
+
+        .replace(
+          />/g,
+          "&gt;"
+        )
+
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+
+        .replace(
+          /'/g,
+          "&#039;"
+        );
+
     }
 
 
+
+    // ========================================
+    // 起動
+    // ========================================
 
     initialize();
 
