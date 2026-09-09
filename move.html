@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ダンス練習管理</title>
 
   <style>
     body {
@@ -33,17 +32,6 @@
       margin-right: 8px;
       padding: 8px 14px;
       cursor: pointer;
-    }
-
-    .diary,
-    .move {
-      border-top: 1px solid #ccc;
-      padding: 20px 0;
-    }
-
-    .diary-text,
-    .move-detail {
-      white-space: pre-wrap;
     }
 
     .section {
@@ -93,125 +81,6 @@
 
 
   <script>
-
-    // =========================
-    // 日記
-    // =========================
-
-    let diaries =
-      JSON.parse(localStorage.getItem("diaries")) || [];
-
-    let editingDiaryIndex = null;
-
-
-    function saveDiary() {
-
-      const date =
-        document.getElementById("date").value;
-
-      const text =
-        document.getElementById("diaryText").value;
-
-      if (!date || !text.trim()) {
-        alert("日付と日記を入力してください");
-        return;
-      }
-
-      if (editingDiaryIndex === null) {
-
-        diaries.unshift({
-          date: date,
-          text: text
-        });
-
-      } else {
-
-        diaries[editingDiaryIndex] = {
-          date: date,
-          text: text
-        };
-
-        editingDiaryIndex = null;
-      }
-
-      localStorage.setItem(
-        "diaries",
-        JSON.stringify(diaries)
-      );
-
-      document.getElementById("date").value = "";
-      document.getElementById("diaryText").value = "";
-
-      showDiaries();
-    }
-
-
-    function editDiary(index) {
-
-      const diary = diaries[index];
-
-      document.getElementById("date").value = diary.date;
-      document.getElementById("diaryText").value = diary.text;
-
-      editingDiaryIndex = index;
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    }
-
-
-    function deleteDiary(index) {
-
-      const ok =
-        confirm("この日記を削除しますか？");
-
-      if (!ok) return;
-
-      diaries.splice(index, 1);
-
-      localStorage.setItem(
-        "diaries",
-        JSON.stringify(diaries)
-      );
-
-      showDiaries();
-    }
-
-
-    function showDiaries() {
-
-      const diaryList =
-        document.getElementById("diaryList");
-
-      diaryList.innerHTML = "";
-
-      diaries.forEach((diary, index) => {
-
-        diaryList.innerHTML += `
-          <div class="diary">
-
-            <strong>${diary.date}</strong>
-
-            <p class="diary-text">
-              ${escapeHtml(diary.text)}
-            </p>
-
-            <button onclick="editDiary(${index})">
-              編集
-            </button>
-
-            <button onclick="deleteDiary(${index})">
-              削除
-            </button>
-
-          </div>
-        `;
-      });
-    }
-
-
 
     // =========================
     // ムーブ管理
