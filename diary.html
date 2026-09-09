@@ -16,8 +16,6 @@
       padding: 0 20px;
     }
 
-    input[type="email"],
-    input[type="password"],
     input[type="date"] {
       width: 100%;
       padding: 10px;
@@ -53,56 +51,24 @@
       display: none;
     }
 
-    #loginArea {
-      margin-bottom: 40px;
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>ダンス練習日記</h1>
+  <a class="back-link" href="index.html">
+    ← 管理画面に戻る
+  </a>
 
-  <!-- ログイン画面 -->
-  <div id="loginArea">
-
-    <h2>ログイン</h2>
-
-    <input
-      type="email"
-      id="email"
-      placeholder="メールアドレス"
-    >
-
-    <input
-      type="password"
-      id="password"
-      placeholder="パスワード"
-    >
-
-    <button onclick="signUp()">
-      新規登録
-    </button>
-
-    <button onclick="signIn()">
-      ログイン
-    </button>
-
-  </div>
-
-
-  <!-- 日記画面 -->
   <div id="appArea">
 
-    <button onclick="signOut()">
-      ログアウト
-    </button>
-
-    <hr>
+    <h1>ダンス練習日記</h1>
 
     <input type="date" id="date">
-
-    <br><br>
 
     <textarea
       id="diaryText"
@@ -117,7 +83,7 @@
 
     <button
       id="cancelEditButton"
-      onclick="cancelEdit()"
+      onclick="clearForm()"
       style="display:none;"
     >
       編集をキャンセル
@@ -131,10 +97,6 @@
 
 
   <script>
-
-    // ========================================
-    // Supabase接続設定
-    // ========================================
 
     const SUPABASE_URL =
       "https://ujjnommuwuziebqlpoow.supabase.co";
@@ -150,117 +112,44 @@
 
 
     let currentUser = null;
-
     let diaries = [];
-
     let editingId = null;
 
 
-    // ========================================
-    // 認証
-    // ========================================
+    // =========================
+    // 初期処理
+    // =========================
 
-    async function signUp() {
-
-      const email =
-        document.getElementById("email").value;
-
-      const password =
-        document.getElementById("password").value;
-
-
-      if (!email || !password) {
-        alert("メールアドレスとパスワードを入力してください");
-        return;
-      }
-
+    async function initialize() {
 
       const { data, error } =
-        await supabaseClient.auth.signUp({
-          email: email,
-          password: password
-        });
-
+        await supabaseClient.auth.getSession();
 
       if (error) {
-        alert(error.message);
+        console.error(error);
         return;
       }
 
-
-      alert(
-        "登録しました。確認メールが届いた場合は、メール内のリンクを開いてください。"
-      );
-    }
-
-
-
-    async function signIn() {
-
-      const email =
-        document.getElementById("email").value;
-
-      const password =
-        document.getElementById("password").value;
-
-
-      if (!email || !password) {
-        alert("メールアドレスとパスワードを入力してください");
+      // 未ログインなら管理画面へ戻す
+      if (!data.session) {
+        window.location.href = "index.html";
         return;
       }
 
-
-      const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
-
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-
-      currentUser = data.user;
-
-      showApp();
-
-      loadDiaries();
-    }
-
-
-
-    async function signOut() {
-
-      await supabaseClient.auth.signOut();
-
-      currentUser = null;
-
-      diaries = [];
-
-      editingId = null;
+      currentUser = data.session.user;
 
       document.getElementById("appArea").style.display =
-        "none";
-
-      document.getElementById("loginArea").style.display =
         "block";
+
+      await loadDiaries();
     }
 
 
-
-    // ========================================
+    // =========================
     // 日記取得
-    // ========================================
+    // =========================
 
     async function loadDiaries() {
-
-      if (!currentUser) {
-        return;
-      }
-
 
       const { data, error } =
         await supabaseClient
@@ -273,16 +162,13 @@
             ascending: false
           });
 
-
       if (error) {
         alert(
           "日記の読み込みに失敗しました：" +
           error.message
         );
-
         return;
       }
-
 
       diaries = data;
 
@@ -290,54 +176,83 @@
     }
 
 
+    // =========================
+    // 保存・更新
+    // =========================
 
-    // ========================================
-    // 日記保存・更新
-    // ========================================
+    async function saveDiary() {
 
-async function saveDiary() {
+      const date =
+        document.getElementById("date").value;
 
-  const {
-    data: { user },
-    error: userError
-  } = await supabaseClient.auth.getUser();
+      const text =
+        document
+          .getElementById("diaryText")
+          .value
+          .trim();
 
-  if (userError || !user) {
-    alert("ログイン情報を取得できませんでした");
-    return;
-  }
+      if (!date || !text) {
+        alert("日付と日記を入力してください");
+        return;
+      }
 
-  const date =
-    document.getElementById("date").value;
 
-  const text =
-    document.getElementById("diaryText").value.trim();
+      let error;
 
-  if (!date || !text) {
-    alert("日付と日記を入力してください");
-    return;
-  }
 
-  const { error } =
-    await supabaseClient
-      .from("diaries")
-      .insert({
-        user_id: user.id,
-        diary_date: date,
-        text: text
-      });
+      // 新規保存
+      if (editingId === null) {
 
-  if (error) {
-    alert("保存に失敗しました：" + error.message);
-    return;
-  }
+        const result =
+          await supabaseClient
+            .from("diaries")
+            .insert({
+              user_id: currentUser.id,
+              diary_date: date,
+              text: text
+            });
 
-  alert("保存できました");
-}
+        error = result.error;
 
-    // ========================================
+      }
+
+      // 編集保存
+      else {
+
+        const result =
+          await supabaseClient
+            .from("diaries")
+            .update({
+              diary_date: date,
+              text: text
+            })
+            .eq("id", editingId);
+
+        error = result.error;
+
+      }
+
+
+      if (error) {
+
+        alert(
+          "保存に失敗しました：" +
+          error.message
+        );
+
+        return;
+      }
+
+
+      clearForm();
+
+      await loadDiaries();
+    }
+
+
+    // =========================
     // 編集
-    // ========================================
+    // =========================
 
     function editDiary(id) {
 
@@ -346,11 +261,9 @@ async function saveDiary() {
           diary => diary.id === id
         );
 
-
       if (!diary) {
         return;
       }
-
 
       document.getElementById("date").value =
         diary.diary_date;
@@ -358,29 +271,17 @@ async function saveDiary() {
       document.getElementById("diaryText").value =
         diary.text;
 
-
       editingId = diary.id;
-
 
       document
         .getElementById("cancelEditButton")
         .style.display = "inline-block";
-
 
       window.scrollTo({
         top: 0,
         behavior: "smooth"
       });
     }
-
-
-
-    function cancelEdit() {
-
-      clearForm();
-
-    }
-
 
 
     function clearForm() {
@@ -397,30 +298,24 @@ async function saveDiary() {
     }
 
 
-
-    // ========================================
+    // =========================
     // 削除
-    // ========================================
+    // =========================
 
     async function deleteDiary(id) {
 
       const ok =
-        confirm(
-          "この日記を削除しますか？"
-        );
-
+        confirm("この日記を削除しますか？");
 
       if (!ok) {
         return;
       }
-
 
       const { error } =
         await supabaseClient
           .from("diaries")
           .delete()
           .eq("id", id);
-
 
       if (error) {
 
@@ -432,20 +327,17 @@ async function saveDiary() {
         return;
       }
 
-
       if (editingId === id) {
         clearForm();
       }
-
 
       await loadDiaries();
     }
 
 
-
-    // ========================================
+    // =========================
     // 表示
-    // ========================================
+    // =========================
 
     function showDiaries() {
 
@@ -453,7 +345,6 @@ async function saveDiary() {
         document.getElementById("diaryList");
 
       diaryList.innerHTML = "";
-
 
       if (diaries.length === 0) {
 
@@ -490,19 +381,6 @@ async function saveDiary() {
     }
 
 
-
-    function showApp() {
-
-      document.getElementById("loginArea").style.display =
-        "none";
-
-      document.getElementById("appArea").style.display =
-        "block";
-
-    }
-
-
-
     function escapeHtml(text) {
 
       return String(text)
@@ -511,39 +389,6 @@ async function saveDiary() {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-
-    }
-
-
-
-    // ========================================
-    // ページを開いたとき
-    // すでにログイン済みならそのまま表示
-    // ========================================
-
-    async function initialize() {
-
-      const { data, error } =
-        await supabaseClient.auth.getSession();
-
-
-      if (error) {
-        console.error(error);
-        return;
-      }
-
-
-      if (data.session) {
-
-        currentUser =
-          data.session.user;
-
-        showApp();
-
-        await loadDiaries();
-
-      }
-
     }
 
 
