@@ -295,88 +295,45 @@
     // 日記保存・更新
     // ========================================
 
-    async function saveDiary() {
+async function saveDiary() {
 
-      if (!currentUser) {
-        alert("ログインしてください");
-        return;
-      }
+  const {
+    data: { user },
+    error: userError
+  } = await supabaseClient.auth.getUser();
 
+  if (userError || !user) {
+    alert("ログイン情報を取得できませんでした");
+    return;
+  }
 
-      const date =
-        document.getElementById("date").value;
+  const date =
+    document.getElementById("date").value;
 
-      const text =
-        document.getElementById("diaryText").value.trim();
+  const text =
+    document.getElementById("diaryText").value.trim();
 
+  if (!date || !text) {
+    alert("日付と日記を入力してください");
+    return;
+  }
 
-      if (!date || !text) {
+  const { error } =
+    await supabaseClient
+      .from("diaries")
+      .insert({
+        user_id: user.id,
+        diary_date: date,
+        text: text
+      });
 
-        alert(
-          "日付と日記を入力してください"
-        );
+  if (error) {
+    alert("保存に失敗しました：" + error.message);
+    return;
+  }
 
-        return;
-      }
-
-
-      // 新規保存
-      if (editingId === null) {
-
-        const { error } =
-          await supabaseClient
-            .from("diaries")
-            .insert({
-              user_id: currentUser.id,
-              diary_date: date,
-              text: text
-            });
-
-
-        if (error) {
-
-          alert(
-            "保存に失敗しました：" +
-            error.message
-          );
-
-          return;
-        }
-
-      }
-
-      // 編集保存
-      else {
-
-        const { error } =
-          await supabaseClient
-            .from("diaries")
-            .update({
-              diary_date: date,
-              text: text
-            })
-            .eq("id", editingId);
-
-
-        if (error) {
-
-          alert(
-            "更新に失敗しました：" +
-            error.message
-          );
-
-          return;
-        }
-
-      }
-
-
-      clearForm();
-
-      await loadDiaries();
-    }
-
-
+  alert("保存できました");
+}
 
     // ========================================
     // 編集
