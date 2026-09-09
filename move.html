@@ -410,53 +410,49 @@
     // 表示
     // =========================
 
-    function showMoves() {
+function showMoves() {
 
-      const moveList =
-        document.getElementById("moveList");
+  const moveList =
+    document.getElementById("moveList");
 
+  moveList.innerHTML = "";
 
-      moveList.innerHTML = "";
+  if (moves.length === 0) {
+    moveList.innerHTML =
+      "<p>まだムーブがありません。</p>";
+    return;
+  }
 
+  moves.forEach((move, index) => {
 
-      if (moves.length === 0) {
+    moveList.innerHTML += `
+      <div class="move">
 
-        moveList.innerHTML =
-          "<p>まだムーブがありません。</p>";
+        <h3>ムーブ${index + 1}</h3>
 
-        return;
-      }
+        <p style="white-space: normal;">
+          <strong style="display:block;">ネタ：</strong>
+          ${escapeHtml(move.idea)}
+        </p>
 
+        <p style="white-space: normal;">
+          <strong style="display:block;">詳細：</strong>
+          ${escapeHtml(move.detail || "").replace(/\n/g, "<br>")}
+        </p>
 
-moves.forEach((move, index) => {
+        <button onclick="editMove(${move.id})">
+          編集
+        </button>
 
-  moveList.innerHTML += `
-    <div class="move">
+        <button onclick="deleteMove(${move.id})">
+          削除
+        </button>
 
-      <h3>ムーブ${index + 1}</h3>
-
-      <p>
-        <strong>ネタ：</strong><br>
-        ${escapeHtml(move.idea)}
-      </p>
-
-      <p>
-        <strong>詳細：</strong><br>
-        ${escapeHtml(move.detail || "").replace(/\n/g, "<br>")}
-      </p>
-
-      <button onclick="editMove(${move.id})">
-        編集
-      </button>
-
-      <button onclick="deleteMove(${move.id})">
-        削除
-      </button>
-
-    </div>
-  `;
-
-});
+      </div>
+    `;
+  });
+}
+    
     }
 
 
