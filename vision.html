@@ -10,58 +10,116 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    body {
-      font-family: sans-serif;
-      max-width: 700px;
-      margin: 40px auto;
-      padding: 0 20px;
+    <style>
+  body {
+    font-family: sans-serif;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-top: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    height: 150px;
+    margin-top: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  button {
+    margin-top: 10px;
+    margin-right: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+
+  .diary {
+    border-top: 1px solid #ccc;
+    padding: 20px 0;
+  }
+
+  .diary-text {
+    white-space: pre-wrap;
+  }
+
+  #appArea {
+    display: none;
+  }
+
+  .top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .back-link {
+    display: inline-block;
+    text-decoration: none;
+    color: #333;
+  }
+
+  .page-links {
+    display: flex;
+    gap: 40px;
+  }
+
+  .page-links a {
+    text-decoration: none;
+    color: #333;
+  }
+
+  .page-links a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .top-nav {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
     }
 
-    textarea {
-      width: 100%;
-      min-height: 220px;
-      padding: 12px;
-      box-sizing: border-box;
-      font-size: 16px;
-      line-height: 1.7;
+    .page-links {
+      gap: 20px;
+      flex-wrap: wrap;
     }
-
-    button {
-      margin-top: 12px;
-      padding: 10px 16px;
-      cursor: pointer;
-    }
-
-    #appArea {
-      display: none;
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-bottom: 20px;
-    }
-
-    .vision-display {
-      white-space: pre-wrap;
-      line-height: 1.8;
-      padding: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-top: 16px;
-    }
-
-    #editArea {
-      display: none;
-    }
-  </style>
+  }
+</style>
 </head>
 
 
 <body>
 
-  <a href="index.html" class="back-link">
-    ← 管理画面に戻る
+  <div class="top-nav">
+
+  <a class="back-link" href="index.html">
+    ← 管理画面
   </a>
+
+  <div class="page-links">
+
+    <a href="vision.html">
+      なりたい像
+    </a>
+
+    <a href="diary.html">
+      日記
+    </a>
+
+    <a href="move.html">
+      ムーブ管理
+    </a>
+
+  </div>
+
 
 
   <div id="appArea">
