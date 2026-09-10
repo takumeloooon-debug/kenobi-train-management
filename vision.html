@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>なりたい像</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      padding: 12px;
+      box-sizing: border-box;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+
+    #appArea {
+      display: none;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .vision-display {
+      white-space: pre-wrap;
+      line-height: 1.8;
+      padding: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 16px;
+    }
+
+    #editArea {
+      display: none;
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <a href="index.html" class="back-link">
+    ← 管理画面に戻る
+  </a>
+
+
+  <div id="appArea">
+
+    <h1>なりたい像</h1>
+
+
+    <!-- 保存済み内容表示 -->
+    <div id="displayArea">
+
+      <div
+        id="visionDisplay"
+        class="vision-display"
+      ></div>
+
+      <button
+        id="editButton"
+        onclick="startEdit()"
+        style="display:none;"
+      >
+        編集
+      </button>
+
+    </div>
+
+
+    <!-- 入力・編集 -->
+    <div id="editArea">
+
+      <textarea
+        id="visionInput"
+        placeholder="どんなダンサーになりたいか、自由に書いてください"
+      ></textarea>
+
+      <br>
+
+      <button onclick="saveVision()">
+        保存
+      </button>
+
+      <button
+        id="cancelButton"
+        onclick="cancelEdit()"
+        style="display:none;"
+      >
+        キャンセル
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://ujjnommuwuziebqlpoow.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_NkUf6eUb459UuuGDCMzJrQ_ILcc7PJf";
+
+    const supabaseClient =
+      supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    let currentUser = null;
+
+    let currentVision = null;
+
+
+
+    // =========================
+    // 初期処理
+    // =========================
+
+    async function initialize() {
+
+      const { data, error } =
+        await supabaseClient.auth.getSession();
+
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+
+      if (!data.session) {
+        window.location.href = "index.html";
+        return;
+      }
+
+
+      currentUser =
+        data.session.user;
+
+
+      document
+        .getElementById("appArea")
+        .style.display = "block";
+
+
+      await loadVision();
+    }
+
+
+
+    // =========================
+    // なりたい像を取得
+    // =========================
+
+    async function loadVision() {
+
+      const { data, error } =
+        await supabaseClient
+          .from("visions")
+          .select("*")
+          .eq("user_id", currentUser.id)
+          .maybeSingle();
+
+
+      if (error) {
+
+        alert(
+          "読み込みに失敗しました：" +
+          error.message
+        );
+
+        return;
+      }
+
+
+      currentVision = data;
+
+
+      // まだ保存されていない場合
+      if (!currentVision) {
+
+        document
+          .getElementById("displayArea")
+          .style.display = "none";
+
+
+        document
+          .getElementById("editArea")
+          .style.display = "block";
+
+
+        document
+          .getElementById("cancelButton")
+          .style.display = "none";
+
+
+        return;
+      }
+
+
+      // 保存済みの場合
+      showVision();
+    }
+
+
+
+    // =========================
+    // 表示
+    // =========================
+
+    function showVision() {
+
+      document
+        .getElementById("visionDisplay")
+        .textContent =
+          currentVision.content;
+
+
+      document
+        .getElementById("displayArea")
+        .style.display =
+          "block";
+
+
+      document
+        .getElementById("editArea")
+        .style.display =
+          "none";
+
+
+      document
+        .getElementById("editButton")
+        .style.display =
+          "inline-block";
+    }
+
+
+
+    // =========================
+    // 編集開始
+    // =========================
+
+    function startEdit() {
+
+      document
+        .getElementById("visionInput")
+        .value =
+          currentVision.content;
+
+
+      document
+        .getElementById("displayArea")
+        .style.display =
+          "none";
+
+
+      document
+        .getElementById("editArea")
+        .style.display =
+          "block";
+
+
+      document
+        .getElementById("cancelButton")
+        .style.display =
+          "inline-block";
+    }
+
+
+
+    // =========================
+    // 保存
+    // =========================
+
+    async function saveVision() {
+
+      const content =
+        document
+          .getElementById("visionInput")
+          .value
+          .trim();
+
+
+      if (!content) {
+
+        alert(
+          "内容を入力してください"
+        );
+
+        return;
+      }
+
+
+      let error;
+
+
+      // 初回保存
+      if (!currentVision) {
+
+        const result =
+          await supabaseClient
+            .from("visions")
+            .insert({
+              user_id:
+                currentUser.id,
+
+              content:
+                content
+            });
+
+
+        error =
+          result.error;
+
+      }
+
+
+      // 編集保存
+      else {
+
+        const result =
+          await supabaseClient
+            .from("visions")
+            .update({
+              content:
+                content
+            })
+            .eq(
+              "id",
+              currentVision.id
+            );
+
+
+        error =
+          result.error;
+
+      }
+
+
+      if (error) {
+
+        alert(
+          "保存に失敗しました：" +
+          error.message
+        );
+
+        return;
+      }
+
+
+      await loadVision();
+    }
+
+
+
+    // =========================
+    // 編集キャンセル
+    // =========================
+
+    function cancelEdit() {
+
+      if (!currentVision) {
+        return;
+      }
+
+
+      showVision();
+    }
+
+
+
+    initialize();
+
+  </script>
+
+</body>
+
+</html>
