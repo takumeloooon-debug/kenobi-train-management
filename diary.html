@@ -90,6 +90,27 @@
       flex-wrap: wrap;
     }
   }
+
+    .week-description {
+  margin-bottom: 8px;
+}
+
+#weekSelect {
+  padding: 10px;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+#copyMessage {
+  margin-top: 10px;
+}
+
+.section-divider {
+  margin-top: 40px;
+  margin-bottom: 30px;
+  border: none;
+  border-top: 1px solid #ccc;
+}
 </style>
 </head>
 
@@ -143,6 +164,22 @@
     >
       編集をキャンセル
     </button>
+
+    <hr class="section-divider">
+
+<h2>週ごとにコピー</h2>
+
+<p class="week-description">
+  コピーしたい週の月曜日を選択
+</p>
+
+<select id="weekSelect"></select>
+
+<button onclick="copyWeekDiaries()">
+  この週の日記をコピー
+</button>
+
+<p id="copyMessage"></p>
 
     <h2>過去の日記</h2>
 
@@ -228,6 +265,7 @@
       diaries = data;
 
       showDiaries();
+      generateWeeks();
     }
 
 
@@ -435,6 +473,252 @@
       });
     }
 
+    // =========================
+// 週一覧を作成
+// =========================
+
+function generateWeeks() {
+
+  const weekSelect =
+    document.getElementById("weekSelect");
+
+  weekSelect.innerHTML = "";
+
+  // 日記が1件もない場合
+  if (diaries.length === 0) {
+
+    const option =
+      document.createElement("option");
+
+    option.textContent =
+      "日記がありません";
+
+    option.disabled = true;
+
+    weekSelect.appendChild(option);
+
+    return;
+  }
+
+
+  // 今日
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+
+
+  // 今日を含む週の月曜日を取得
+  const currentMonday =
+    getMonday(today);
+
+
+  // 一番古い日記の日付
+  const oldestDiary =
+    diaries[diaries.length - 1];
+
+  const oldestDate =
+    parseDate(oldestDiary.diary_date);
+
+
+  // 一番古い日記が属する週の月曜日
+  const oldestMonday =
+    getMonday(oldestDate);
+
+
+  // 今週から過去へ1週間ずつ遡る
+  const monday =
+    new Date(currentMonday);
+
+  while (monday >= oldestMonday) {
+
+    const dateString =
+      formatDate(monday);
+
+    const option =
+      document.createElement("option");
+
+    option.value = dateString;
+    option.textContent = dateString;
+
+    weekSelect.appendChild(option);
+
+    monday.setDate(
+      monday.getDate() - 7
+    );
+  }
+}
+
+
+// =========================
+// 選択した週の日記をコピー
+// =========================
+
+async function copyWeekDiaries() {
+
+  const selectedMonday =
+    document
+      .getElementById("weekSelect")
+      .value;
+
+  if (!selectedMonday) {
+    alert("週を選択してください");
+    return;
+  }
+
+
+  // 月曜日
+  const monday =
+    parseDate(selectedMonday);
+
+
+  // 日曜日
+  const sunday =
+    new Date(monday);
+
+  sunday.setDate(
+    sunday.getDate() + 6
+  );
+
+
+  // 選択した週の日記だけ取り出す
+  const weekDiaries =
+    diaries
+      .filter(diary => {
+
+        const diaryDate =
+          parseDate(diary.diary_date);
+
+        return (
+          diaryDate >= monday &&
+          diaryDate <= sunday
+        );
+
+      })
+      .sort((a, b) =>
+        a.diary_date.localeCompare(
+          b.diary_date
+        )
+      );
+
+
+  if (weekDiaries.length === 0) {
+
+    alert(
+      "この週の日記はありません"
+    );
+
+    return;
+  }
+
+
+  // コピーする文章を作成
+  let copyText = "";
+
+  weekDiaries.forEach(diary => {
+
+    copyText +=
+      `${diary.diary_date}\n`;
+
+    copyText +=
+      `${diary.text}\n\n`;
+
+  });
+
+
+  // クリップボードへコピー
+  try {
+
+    await navigator.clipboard.writeText(
+      copyText.trim()
+    );
+
+    document
+      .getElementById("copyMessage")
+      .textContent =
+      "コピーしました！";
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "コピーに失敗しました"
+    );
+
+  }
+}
+
+
+// =========================
+// 日付関連
+// =========================
+
+// 指定した日が属する週の月曜日を取得
+function getMonday(date) {
+
+  const result =
+    new Date(date);
+
+  const day =
+    result.getDay();
+
+  // 日曜なら6日前、
+  // その他なら曜日に応じて戻す
+  const diff =
+    day === 0
+      ? -6
+      : 1 - day;
+
+  result.setDate(
+    result.getDate() + diff
+  );
+
+  result.setHours(
+    0, 0, 0, 0
+  );
+
+  return result;
+}
+
+
+// "2026-09-14" → Date
+function parseDate(dateString) {
+
+  const [
+    year,
+    month,
+    day
+  ] =
+    dateString
+      .split("-")
+      .map(Number);
+
+  return new Date(
+    year,
+    month - 1,
+    day
+  );
+}
+
+
+// Date → "2026-09-14"
+function formatDate(date) {
+
+  const year =
+    date.getFullYear();
+
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, "0");
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
 
     function escapeHtml(text) {
 
