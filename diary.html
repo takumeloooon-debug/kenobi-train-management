@@ -9,107 +9,327 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-  body {
-    font-family: sans-serif;
-    max-width: 700px;
-    margin: 40px auto;
-    padding: 0 20px;
-  }
-
-  input[type="date"] {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    margin-top: 8px;
-  }
-
-  textarea {
-    width: 100%;
-    height: 150px;
-    margin-top: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-
-  button {
-    margin-top: 10px;
-    margin-right: 8px;
-    padding: 8px 14px;
-    cursor: pointer;
-  }
-
-  .diary {
-    border-top: 1px solid #ccc;
-    padding: 20px 0;
-  }
-
-  .diary-text {
-    white-space: pre-wrap;
-  }
-
-  #appArea {
-    display: none;
-  }
-
-  .top-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-  }
-
-  .back-link {
-    display: inline-block;
-    text-decoration: none;
-    color: #333;
-  }
-
-  .page-links {
-    display: flex;
-    gap: 40px;
-  }
-
-  .page-links a {
-    text-decoration: none;
-    color: #333;
-  }
-
-  .page-links a:hover {
-    text-decoration: underline;
-  }
-
-  @media (max-width: 600px) {
-    .top-nav {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 15px;
-    }
-
-    .page-links {
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-  }
-
-    .week-description {
-  margin-bottom: 8px;
+  * {
+  box-sizing: border-box;
 }
 
-#weekSelect {
-  padding: 10px;
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 0 20px;
+
+  background: #eeeeff;
+  color: #292938;
+}
+
+
+/* =========================
+   上部ナビ
+========================= */
+
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 40px;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.back-link,
+.page-links a {
+  text-decoration: none;
+  color: #7775a8;
+}
+
+.back-link:hover,
+.page-links a:hover {
+  color: #555477;
+}
+
+.page-links {
+  display: flex;
+  gap: 24px;
+}
+
+
+/* =========================
+   メインタイトル
+========================= */
+
+h1 {
+  margin: 0 0 35px;
+
+  color: #7775a8;
+
+  font-size: 52px;
+  font-weight: 900;
+
+  letter-spacing: -4px;
+  line-height: 1;
+}
+
+
+/* =========================
+   小見出し
+========================= */
+
+h2 {
+  margin-top: 35px;
+  margin-bottom: 15px;
+
+  color: #7775a8;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  border-bottom: 2px solid #c2c0e4;
+  padding-bottom: 8px;
+}
+
+
+/* =========================
+   アプリ本体
+========================= */
+
+#appArea {
+  display: none;
+}
+
+
+/* =========================
+   日付
+========================= */
+
+input[type="date"] {
+  width: 100%;
+
+  margin-top: 8px;
+  padding: 13px;
+
+  border: 2px solid #c2c0e4;
+  border-radius: 7px;
+
+  background: #ffffff;
+  color: #555477;
+
+  font-size: 15px;
+  outline: none;
+}
+
+
+/* =========================
+   日記入力
+========================= */
+
+textarea {
+  width: 100%;
+  height: 160px;
+
+  margin-top: 12px;
+  padding: 14px;
+
+  border: 2px solid #c2c0e4;
+  border-radius: 7px;
+
+  background: #ffffff;
+  color: #292938;
+
+  font-family: inherit;
   font-size: 16px;
-  margin-right: 8px;
+
+  resize: vertical;
+  outline: none;
 }
 
-#copyMessage {
-  margin-top: 10px;
+textarea:focus,
+input[type="date"]:focus,
+select:focus {
+  border-color: #8d8bb9;
 }
+
+
+/* =========================
+   ボタン
+========================= */
+
+button {
+  margin-top: 12px;
+  margin-right: 6px;
+
+  padding: 11px 18px;
+
+  border: 2px solid #aaa8d2;
+  border-radius: 7px;
+
+  background: #eeeeff;
+  color: #555477;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.15s;
+}
+
+button:hover {
+  background: #dcdcf5;
+  color: #37364f;
+}
+
+
+/* =========================
+   区切り線
+========================= */
 
 .section-divider {
   margin-top: 40px;
   margin-bottom: 30px;
+
   border: none;
-  border-top: 1px solid #ccc;
+  border-top: 2px solid #c2c0e4;
+}
+
+
+/* =========================
+   週コピー
+========================= */
+
+.week-description {
+  margin-bottom: 8px;
+
+  color: #777691;
+
+  font-size: 14px;
+}
+
+#weekSelect {
+  padding: 10px;
+
+  border: 2px solid #c2c0e4;
+  border-radius: 7px;
+
+  background: #ffffff;
+  color: #555477;
+
+  font-size: 15px;
+
+  outline: none;
+}
+
+#copyMessage {
+  margin-top: 10px;
+
+  color: #7775a8;
+  font-weight: 700;
+}
+
+
+/* =========================
+   過去の日記
+========================= */
+
+.diary {
+  margin-top: 14px;
+  padding: 18px;
+
+  border: 2px solid #c2c0e4;
+  border-radius: 10px;
+
+  background: #f7f7ff;
+}
+
+.diary strong {
+  color: #7775a8;
+
+  font-size: 14px;
+}
+
+.diary-text {
+  white-space: pre-wrap;
+
+  margin: 14px 0;
+
+  line-height: 1.7;
+}
+
+
+/* 過去日記の編集・削除は少し小さく */
+
+.diary button {
+  padding: 7px 12px;
+
+  font-size: 12px;
+
+  border-width: 1px;
+}
+
+
+/* 削除ボタンはさらに控えめ */
+
+.diary button:last-child {
+  color: #9998b5;
+
+  border-color: #d2d1e5;
+
+  background: transparent;
+}
+
+
+/* =========================
+   スマホ
+========================= */
+
+@media (max-width: 600px) {
+
+  body {
+    margin: 25px auto;
+    padding: 0 16px;
+  }
+
+  .top-nav {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 14px;
+
+    margin-bottom: 30px;
+  }
+
+  .page-links {
+    width: 100%;
+
+    gap: 18px;
+
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    font-size: 42px;
+
+    letter-spacing: -3px;
+
+    margin-bottom: 28px;
+  }
+
+  textarea {
+    height: 150px;
+  }
+
+  #weekSelect {
+    width: 100%;
+
+    margin-bottom: 4px;
+  }
+
+  #weekSelect + button {
+    width: 100%;
+  }
+
 }
 </style>
 </head>
