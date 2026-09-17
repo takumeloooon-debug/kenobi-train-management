@@ -294,26 +294,29 @@ button:hover {
   .top-nav {
     flex-direction: column;
     align-items: flex-start;
-
     gap: 14px;
-
     margin-bottom: 30px;
   }
 
   .page-links {
     width: 100%;
-
     gap: 18px;
-
     flex-wrap: wrap;
   }
 
   h1 {
     font-size: 42px;
-
     letter-spacing: -3px;
-
     margin-bottom: 28px;
+  }
+
+  /* 日付と日記入力欄の横幅を揃える */
+  input[type="date"],
+  textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   textarea {
@@ -322,7 +325,6 @@ button:hover {
 
   #weekSelect {
     width: 100%;
-
     margin-bottom: 4px;
   }
 
@@ -330,13 +332,6 @@ button:hover {
     width: 100%;
   }
 
-}
-input[type="date"] {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
 }
 </style>
 </head>
