@@ -10,92 +10,243 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+  * {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 0 20px;
+
+  background: #eeeeff;
+  color: #292938;
+}
+
+
+/* =========================
+   上部ナビ
+========================= */
+
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 40px;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.back-link,
+.page-links a {
+  text-decoration: none;
+  color: #7775a8;
+}
+
+.back-link:hover,
+.page-links a:hover {
+  color: #555477;
+}
+
+.page-links {
+  display: flex;
+  gap: 24px;
+}
+
+
+/* =========================
+   メインタイトル
+========================= */
+
+h1 {
+  margin: 0 0 35px;
+
+  color: #7775a8;
+
+  font-size: 52px;
+  font-weight: 900;
+
+  letter-spacing: -4px;
+  line-height: 1;
+}
+
+
+/* =========================
+   アプリ本体
+========================= */
+
+#appArea {
+  display: none;
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* =========================
+   なりたい像 表示部分
+========================= */
+
+.vision-display {
+  white-space: pre-wrap;
+
+  padding: 20px;
+
+  border: 2px solid #c2c0e4;
+  border-radius: 10px;
+
+  background: #f7f7ff;
+
+  color: #292938;
+
+  font-size: 16px;
+  line-height: 1.8;
+
+  overflow-wrap: break-word;
+}
+
+
+/* =========================
+   入力欄
+========================= */
+
+textarea {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  height: 180px;
+
+  margin-top: 12px;
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  border: 2px solid #c2c0e4;
+  border-radius: 7px;
+
+  background: #ffffff;
+  color: #292938;
+
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+
+  resize: vertical;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #8d8bb9;
+}
+
+
+/* =========================
+   ボタン
+========================= */
+
+button {
+  margin-top: 12px;
+  margin-right: 6px;
+
+  padding: 11px 18px;
+
+  border: 2px solid #aaa8d2;
+  border-radius: 7px;
+
+  background: #eeeeff;
+  color: #555477;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.15s;
+}
+
+button:hover {
+  background: #dcdcf5;
+  color: #37364f;
+}
+
+
+/* =========================
+   編集ボタン
+========================= */
+
+#editButton {
+  margin-top: 16px;
+}
+
+
+/* =========================
+   キャンセルボタン
+========================= */
+
+#cancelButton {
+  color: #9998b5;
+  border-color: #d2d1e5;
+  background: transparent;
+}
+
+
+/* =========================
+   スマホ
+========================= */
+
+@media (max-width: 600px) {
+
   body {
-    font-family: sans-serif;
-    max-width: 700px;
-    margin: 40px auto;
-    padding: 0 20px;
+    margin: 25px auto;
+    padding: 0 16px;
   }
 
-  input[type="date"] {
+  .top-nav {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 14px;
+
+    margin-bottom: 30px;
+  }
+
+  .page-links {
     width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    margin-top: 8px;
+
+    gap: 18px;
+
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    font-size: 42px;
+
+    letter-spacing: -3px;
+
+    margin-bottom: 28px;
   }
 
   textarea {
     width: 100%;
-    height: 150px;
-    margin-top: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-  }
+    max-width: 100%;
+    min-width: 0;
 
-  button {
-    margin-top: 10px;
-    margin-right: 8px;
-    padding: 8px 14px;
-    cursor: pointer;
-  }
-
-  .diary {
-    border-top: 1px solid #ccc;
-    padding: 20px 0;
-  }
-
-  .diary-text {
-    white-space: pre-wrap;
-  }
-
-  #appArea {
-    display: none;
-  }
-
-  .top-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-  }
-
-  .back-link {
-    display: inline-block;
-    text-decoration: none;
-    color: #333;
-  }
-
-  .page-links {
-    display: flex;
-    gap: 40px;
-  }
-
-  .page-links a {
-    text-decoration: none;
-    color: #333;
-  }
-
-  .page-links a:hover {
-    text-decoration: underline;
+    height: 170px;
   }
 
   .vision-display {
-  white-space: pre-wrap !important;
-  line-height: 1.8;
-  overflow-wrap: break-word;
+    width: 100%;
+
+    padding: 16px;
+
+    font-size: 16px;
+    line-height: 1.8;
   }
-
-  @media (max-width: 600px) {
-    .top-nav {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 15px;
-    }
-
-    .page-links {
-      gap: 20px;
-      flex-wrap: wrap;
-    }
 }
 </style>
 </head>
