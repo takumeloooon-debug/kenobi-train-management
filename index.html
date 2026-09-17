@@ -9,40 +9,231 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    body {
-      font-family: sans-serif;
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
+    /* =========================
+   全体
+========================= */
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      box-sizing: border-box;
-    }
+* {
+  box-sizing: border-box;
+}
 
-    button {
-      width: 100%;
-      margin-top: 12px;
-      padding: 12px;
-      cursor: pointer;
-    }
+body {
+  font-family: Arial, Helvetica, sans-serif;
 
-    #menuArea {
-      display: none;
-    }
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 20px;
 
-    .menu-button {
-      display: block;
-      text-decoration: none;
-      text-align: center;
-      border: 1px solid #ccc;
-      padding: 16px;
-      margin-top: 16px;
-      color: black;
-    }
+  background: #eeeeff;
+  color: #171717;
+}
+
+
+/* =========================
+   メインタイトル
+========================= */
+
+h1 {
+  margin: 0 0 45px;
+
+  color: #ff3b12;
+
+  font-size: 64px;
+  font-weight: 900;
+
+  letter-spacing: -5px;
+  line-height: 0.9;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================
+   小見出し
+========================= */
+
+h2 {
+  margin: 0 0 20px;
+
+  color: #ff3b12;
+
+  font-size: 18px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+
+  border-bottom: 2px solid #ff3b12;
+
+  padding-bottom: 8px;
+}
+
+
+/* =========================
+   ログイン・管理画面
+========================= */
+
+#loginArea,
+#menuArea {
+  border: 2px solid #ff6b4a;
+  border-radius: 12px;
+
+  padding: 24px;
+
+  background: rgba(255, 255, 255, 0.25);
+}
+
+#menuArea {
+  display: none;
+}
+
+
+/* =========================
+   入力フォーム
+========================= */
+
+input {
+  width: 100%;
+
+  padding: 14px;
+
+  margin-top: 10px;
+
+  border: 2px solid #ff6b4a;
+  border-radius: 7px;
+
+  background: #f8f8ff;
+
+  color: #171717;
+
+  font-size: 15px;
+
+  outline: none;
+}
+
+
+/* 入力中 */
+
+input:focus {
+  border-color: #ff3b12;
+
+  background: white;
+}
+
+
+/* placeholder */
+
+input::placeholder {
+  color: #999;
+}
+
+
+/* =========================
+   ボタン
+========================= */
+
+button {
+  width: 100%;
+
+  margin-top: 12px;
+  padding: 14px;
+
+  border: 2px solid #ff3b12;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #ff3b12;
+
+  font-size: 15px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition: 0.15s;
+}
+
+
+/* マウスを乗せた時 */
+
+button:hover {
+  background: #ff3b12;
+
+  color: white;
+
+  transform: translateY(-2px);
+}
+
+
+/* 押した瞬間 */
+
+button:active {
+  transform: translateY(0);
+}
+
+
+/* =========================
+   管理画面のボタン
+========================= */
+
+#menuArea button {
+  text-align: left;
+
+  padding: 20px 18px;
+
+  font-size: 17px;
+
+  position: relative;
+}
+
+
+/* 右側に矢印 */
+
+#menuArea button::after {
+  content: "→";
+
+  position: absolute;
+
+  right: 18px;
+
+  font-size: 20px;
+}
+
+
+/* =========================
+   ログアウトだけ少し離す
+========================= */
+
+#menuArea button:last-child {
+  margin-top: 30px;
+}
+
+
+/* =========================
+   スマホ
+========================= */
+
+@media (max-width: 600px) {
+
+  body {
+    margin: 25px auto;
+
+    padding: 0 16px;
+  }
+
+  h1 {
+    font-size: 52px;
+
+    letter-spacing: -4px;
+
+    margin-bottom: 35px;
+  }
+
+  #loginArea,
+  #menuArea {
+    padding: 18px;
+  }
+
+}
   </style>
 </head>
 
