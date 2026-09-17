@@ -9,140 +9,89 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    /* =========================
-   全体
-========================= */
-
-* {
-  box-sizing: border-box;
-}
-
+/* 背景 */
 body {
   font-family: Arial, Helvetica, sans-serif;
-
   max-width: 600px;
   margin: 40px auto;
   padding: 0 20px;
 
   background: #eeeeff;
-  color: #171717;
+  color: #292938;
 }
 
-
-/* =========================
-   メインタイトル
-========================= */
-
+/* タイトル */
 h1 {
   margin: 0 0 45px;
 
-  color: #ff3b12;
+  color: #7775a8;
 
   font-size: 64px;
   font-weight: 900;
-
   letter-spacing: -5px;
   line-height: 0.9;
-
-  text-transform: uppercase;
 }
 
-
-/* =========================
-   小見出し
-========================= */
-
+/* 小見出し */
 h2 {
   margin: 0 0 20px;
 
-  color: #ff3b12;
+  color: #7775a8;
 
   font-size: 18px;
   font-weight: 900;
 
-  text-transform: uppercase;
-
-  border-bottom: 2px solid #ff3b12;
-
+  border-bottom: 2px solid #c2c0e4;
   padding-bottom: 8px;
 }
 
-
-/* =========================
-   ログイン・管理画面
-========================= */
-
+/* ログイン・管理画面 */
 #loginArea,
 #menuArea {
-  border: 2px solid #ff6b4a;
+  border: 2px solid #c2c0e4;
   border-radius: 12px;
 
   padding: 24px;
 
-  background: rgba(255, 255, 255, 0.25);
+  background: #f7f7ff;
 }
 
 #menuArea {
   display: none;
 }
 
-
-/* =========================
-   入力フォーム
-========================= */
-
+/* 入力欄 */
 input {
   width: 100%;
-
   padding: 14px;
-
   margin-top: 10px;
 
-  border: 2px solid #ff6b4a;
+  border: 2px solid #c2c0e4;
   border-radius: 7px;
 
-  background: #f8f8ff;
-
-  color: #171717;
+  background: #ffffff;
+  color: #292938;
 
   font-size: 15px;
-
   outline: none;
 }
 
-
-/* 入力中 */
-
 input:focus {
-  border-color: #ff3b12;
-
-  background: white;
+  border-color: #8d8bb9;
 }
 
-
-/* placeholder */
-
-input::placeholder {
-  color: #999;
-}
-
-
-/* =========================
-   ボタン
-========================= */
-
+/* ボタン */
 button {
   width: 100%;
 
   margin-top: 12px;
   padding: 14px;
 
-  border: 2px solid #ff3b12;
+  border: 2px solid #aaa8d2;
   border-radius: 7px;
 
-  background: transparent;
-
-  color: #ff3b12;
+  background: #eeeeff;
+  color: #555477;
 
   font-size: 15px;
   font-weight: 900;
@@ -152,29 +101,18 @@ button {
   transition: 0.15s;
 }
 
-
-/* マウスを乗せた時 */
-
 button:hover {
-  background: #ff3b12;
-
-  color: white;
+  background: #dcdcf5;
+  color: #37364f;
 
   transform: translateY(-2px);
 }
-
-
-/* 押した瞬間 */
 
 button:active {
   transform: translateY(0);
 }
 
-
-/* =========================
-   管理画面のボタン
-========================= */
-
+/* 管理画面 */
 #menuArea button {
   text-align: left;
 
@@ -185,46 +123,30 @@ button:active {
   position: relative;
 }
 
-
-/* 右側に矢印 */
-
 #menuArea button::after {
   content: "→";
 
   position: absolute;
-
   right: 18px;
 
   font-size: 20px;
 }
 
-
-/* =========================
-   ログアウトだけ少し離す
-========================= */
-
 #menuArea button:last-child {
   margin-top: 30px;
 }
 
-
-/* =========================
-   スマホ
-========================= */
-
+/* スマホ */
 @media (max-width: 600px) {
 
   body {
     margin: 25px auto;
-
     padding: 0 16px;
   }
 
   h1 {
     font-size: 52px;
-
     letter-spacing: -4px;
-
     margin-bottom: 35px;
   }
 
@@ -232,7 +154,6 @@ button:active {
   #menuArea {
     padding: 18px;
   }
-
 }
   </style>
 </head>
