@@ -158,6 +158,51 @@ button:active {
     padding: 18px;
   }
 }
+    /* =========================
+   管理画面の間隔調整
+========================= */
+
+/* 見出しと最初のボタンを近づける */
+#menuArea h2 {
+  margin-bottom: 8px;
+}
+
+/* 管理メニュー3つの間隔 */
+#menuArea button {
+  margin-top: 10px;
+}
+
+
+/* =========================
+   ログアウト
+========================= */
+
+#menuArea button:last-child {
+  width: auto;
+
+  margin-top: 28px;
+  padding: 9px 14px;
+
+  border: 1px solid #c9c8df;
+
+  color: #9998b5;
+  background: transparent;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ログアウトには矢印を出さない */
+#menuArea button:last-child::after {
+  content: none;
+}
+
+/* ログアウトのhoverも控えめ */
+#menuArea button:last-child:hover {
+  background: #f3f3fb;
+  color: #777691;
+  transform: none;
+}
   </style>
 </head>
 
