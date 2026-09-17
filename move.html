@@ -11,87 +11,322 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+  * {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 0 20px;
+
+  background: #eeeeff;
+  color: #292938;
+}
+
+
+/* =========================
+   上部ナビ
+========================= */
+
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 40px;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.back-link,
+.page-links a {
+  text-decoration: none;
+  color: #7775a8;
+}
+
+.back-link:hover,
+.page-links a:hover {
+  color: #555477;
+}
+
+.page-links {
+  display: flex;
+  gap: 24px;
+}
+
+
+/* =========================
+   メインタイトル
+========================= */
+
+h1 {
+  margin: 0 0 35px;
+
+  color: #7775a8;
+
+  font-size: 52px;
+  font-weight: 900;
+
+  letter-spacing: -4px;
+  line-height: 1;
+}
+
+
+/* =========================
+   小見出し
+========================= */
+
+h2 {
+  margin-top: 40px;
+  margin-bottom: 15px;
+
+  color: #7775a8;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  border-bottom: 2px solid #c2c0e4;
+  padding-bottom: 8px;
+}
+
+h3 {
+  margin-top: 20px;
+  margin-bottom: 8px;
+
+  color: #555477;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+
+/* =========================
+   アプリ本体
+========================= */
+
+#appArea {
+  display: none;
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* =========================
+   ネタ入力
+========================= */
+
+#moveIdea {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  padding: 13px;
+
+  border: 2px solid #c2c0e4;
+  border-radius: 7px;
+
+  background: #ffffff;
+  color: #292938;
+
+  font-family: inherit;
+  font-size: 16px;
+
+  outline: none;
+}
+
+
+/* =========================
+   詳細入力
+========================= */
+
+textarea {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  height: 160px;
+
+  margin-top: 8px;
+  padding: 14px;
+
+  border: 2px solid #c2c0e4;
+  border-radius: 7px;
+
+  background: #ffffff;
+  color: #292938;
+
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+
+  resize: vertical;
+  outline: none;
+}
+
+#moveIdea:focus,
+textarea:focus {
+  border-color: #8d8bb9;
+}
+
+
+/* =========================
+   ボタン
+========================= */
+
+button {
+  margin-top: 12px;
+  margin-right: 6px;
+
+  padding: 11px 18px;
+
+  border: 2px solid #aaa8d2;
+  border-radius: 7px;
+
+  background: #eeeeff;
+  color: #555477;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.15s;
+}
+
+button:hover {
+  background: #dcdcf5;
+  color: #37364f;
+}
+
+
+/* =========================
+   編集キャンセル
+========================= */
+
+#cancelEditButton {
+  color: #9998b5;
+  border-color: #d2d1e5;
+  background: transparent;
+}
+
+
+/* =========================
+   ムーブ一覧
+========================= */
+
+.move {
+  margin-top: 14px;
+  padding: 18px;
+
+  border: 2px solid #c2c0e4;
+  border-radius: 10px;
+
+  background: #f7f7ff;
+}
+
+.move h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+
+  color: #7775a8;
+
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.move p {
+  margin: 10px 0;
+
+  line-height: 1.7;
+
+  overflow-wrap: break-word;
+}
+
+.move-label {
+  color: #555477;
+}
+
+
+/* 一覧内の編集・削除ボタン */
+
+.move button {
+  padding: 7px 12px;
+
+  font-size: 12px;
+
+  border-width: 1px;
+}
+
+
+/* 削除は少し控えめ */
+
+.move button:last-child {
+  color: #9998b5;
+
+  border-color: #d2d1e5;
+
+  background: transparent;
+}
+
+
+/* =========================
+   スマホ
+========================= */
+
+@media (max-width: 600px) {
+
   body {
-    font-family: sans-serif;
-    max-width: 700px;
-    margin: 40px auto;
-    padding: 0 20px;
-  }
-
-  input[type="date"] {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    margin-top: 8px;
-  }
-
-  textarea {
-    width: 100%;
-    height: 150px;
-    margin-top: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-
-  button {
-    margin-top: 10px;
-    margin-right: 8px;
-    padding: 8px 14px;
-    cursor: pointer;
-  }
-
-  .diary {
-    border-top: 1px solid #ccc;
-    padding: 20px 0;
-  }
-
-  .diary-text {
-    white-space: pre-wrap;
-  }
-
-  #appArea {
-    display: none;
+    margin: 25px auto;
+    padding: 0 16px;
   }
 
   .top-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 14px;
+
     margin-bottom: 30px;
   }
 
-  .back-link {
-    display: inline-block;
-    text-decoration: none;
-    color: #333;
-  }
-
   .page-links {
-    display: flex;
-    gap: 40px;
+    width: 100%;
+
+    gap: 18px;
+
+    flex-wrap: wrap;
   }
 
-  .page-links a {
-    text-decoration: none;
-    color: #333;
+  h1 {
+    font-size: 42px;
+
+    letter-spacing: -3px;
+
+    margin-bottom: 28px;
   }
 
-  .page-links a:hover {
-    text-decoration: underline;
+  #moveIdea,
+  textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
-  @media (max-width: 600px) {
-    .top-nav {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 15px;
-    }
-
-    .page-links {
-      gap: 20px;
-      flex-wrap: wrap;
-    }
+  textarea {
+    height: 150px;
   }
+
+  .move {
+    padding: 16px;
+  }
+}
 </style>
 
 </head>
